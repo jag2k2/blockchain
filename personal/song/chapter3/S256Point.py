@@ -19,7 +19,7 @@ class S256Point(Point):
     def __repr__(self):
         if(self.x == None):
             return 'S256Point(infinity)'
-        return 'S256Point({},{})'.format(self.x.num, self.y.num)
+        return 'S256Point({},{})'.format(hex(self.x.num), hex(self.y.num))
 
     def verify(self, z, sig):
         s_inv = pow(sig.s, N-2, N)
