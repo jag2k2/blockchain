@@ -1,5 +1,7 @@
 from shared.Utility import hash256
 from shared.Utility import little_endian_to_int
+from shared.Utility import read_varint
+from shared.TxIn import TxIn
 
 class Tx:
     def __init__(self, version, tx_ins, tx_outs, locktime, testnet=False):
@@ -33,7 +35,16 @@ class Tx:
     @classmethod
     def parse(self, stream, testnet=False):
         version = little_endian_to_int(stream.read(4))
-        return self(version, None, None, None, testnet=testnet)
+        num_inputs = read_varint(stream)
+        inputs = []
+        for input in range(num_inputs):
+            inputs.append(TxIn.parse(stream))
+        outputs = []
+        num_outputs = read_varint(stream)
+        for ouptut in range(num_outputs):
+            outputs.append(TxOut.parse(stream))
+
+        return self(version, inputs, outputs, None, testnet=testnet)
 
 
     
