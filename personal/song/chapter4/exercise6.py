@@ -1,5 +1,4 @@
 from PrivateKey import PrivateKey
-from S256Point import S256Point
 
 if __name__ == '__main__':
     print(PrivateKey(5002).wif(True, True))
