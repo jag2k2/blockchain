@@ -8,7 +8,7 @@ class S256Field(FieldElement):
         super().__init__(num=num, prime=P)
 
     def __repr__(self):
-        return '{:x}'.formate(self.num).zfill(64)
+        return '{:x}'.format(self.num).zfill(64)
 
     def sqrt(self):
         return self**((P + 1) // 4)

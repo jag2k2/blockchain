@@ -1,5 +1,6 @@
 from Point import Point
 from S256Field import S256Field, P
+from Utility import encode_base58_checksum, hash160
 
 N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 A = 0
@@ -42,7 +43,7 @@ class S256Point(Point):
         if sec_bin[0] == 4:
             x = int.from_bytes(sec_bin[1:33], 'big')
             y = int.from_bytes(sec_bin[33:65], 'big')
-            return S256Point(x=x, y=x)
+            return S256Point(x=x, y=y)
         is_even = sec_bin[0] == 2
         x = S256Field(int.from_bytes(sec_bin[1:], 'big'))
         alpha = x**3 + S256Field(B)
@@ -57,6 +58,17 @@ class S256Point(Point):
             return S256Point(x, even_beta)
         else:
             return S256Point(x, odd_beta)
+
+    def hash160(self, compressed=True):
+        return hash160(self.sec(compressed))
+
+    def address(self, compressed=True, testnet=False):
+        h160 = self.hash160(compressed)
+        if testnet:
+            prefix = b'\x6f'
+        else:
+            prefix = b'\x00'
+        return encode_base58_checksum(prefix + h160)
 
 G = S256Point(
     0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798,
