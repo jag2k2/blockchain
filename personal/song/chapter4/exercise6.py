@@ -1,4 +1,4 @@
-from PrivateKey import PrivateKey
+from shared.PrivateKey import PrivateKey
 
 if __name__ == '__main__':
     print(PrivateKey(5002).wif(True, True))

@@ -1,4 +1,4 @@
-from Utility import little_endian_to_int, int_to_little_endian
+from shared.Utility import little_endian_to_int, int_to_little_endian
 
 if __name__ == '__main__':
 

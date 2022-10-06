@@ -1,4 +1,4 @@
-from Signature import Signature
+from shared.Signature import Signature
 
 if __name__ == '__main__':
     r = 0x37206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c6

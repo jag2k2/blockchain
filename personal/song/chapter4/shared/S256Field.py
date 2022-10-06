@@ -1,4 +1,4 @@
-from FieldElement import FieldElement
+from shared.FieldElement import FieldElement
 
 P = 2**256 - 2**32 - 977
 

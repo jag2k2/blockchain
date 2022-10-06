@@ -1,4 +1,4 @@
-from Utility import encode_base58
+from shared.Utility import encode_base58
 
 if __name__ == '__main__':
     hex1 = '7c076ff316692a3d7eb3c3bb0f8b1488cf72e1afcd929e29307032997a838a3d'

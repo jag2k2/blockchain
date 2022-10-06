@@ -1,6 +1,6 @@
-from Point import Point
-from S256Field import S256Field, P
-from Utility import encode_base58_checksum, hash160
+from shared.Point import Point
+from shared.S256Field import S256Field, P
+from shared.Utility import encode_base58_checksum, hash160
 
 N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 A = 0

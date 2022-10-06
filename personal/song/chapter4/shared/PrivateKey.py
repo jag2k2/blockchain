@@ -1,7 +1,7 @@
 from random import randint
-from S256Point import B, G, N
-from Signature import Signature
-from Utility import encode_base58_checksum
+from shared.S256Point import B, G, N
+from shared.Signature import Signature
+from shared.Utility import encode_base58_checksum
 
 import hashlib
 import hmac

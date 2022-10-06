@@ -1,5 +1,5 @@
-from PrivateKey import PrivateKey
-from S256Point import S256Point
+from shared.PrivateKey import PrivateKey
+from shared.S256Point import S256Point
 
 if __name__ == '__main__':
     print(PrivateKey(5002).public.address(False, True))
