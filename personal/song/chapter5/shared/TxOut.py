@@ -1,6 +1,5 @@
-
-from chapter5.shared.Utility import little_endian_to_int, read_varint
-
+from shared.Utility import little_endian_to_int, read_varint
+from shared.Script import Script
 
 class TxOut:
     def __init__(self, amount, script_pubkey):

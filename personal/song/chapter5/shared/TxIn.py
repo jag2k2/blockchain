@@ -1,4 +1,5 @@
 from shared.Utility import little_endian_to_int, read_varint
+from shared.Script import Script
 
 class TxIn:
     def __init__(self, prev_tx, prev_index, script_sig=None, sequence=0xffffffff):
@@ -11,7 +12,7 @@ class TxIn:
         self.sequence = sequence
 
     def __repr__(self):
-        return '{}:{}'.format(self.prev_tex.hex(), self.prev_index)
+        return '{}:{}'.format(self.prev_tx.hex(), self.prev_index)
 
     @classmethod
     def parse(self, stream):

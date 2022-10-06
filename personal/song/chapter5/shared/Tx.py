@@ -2,6 +2,7 @@ from shared.Utility import hash256
 from shared.Utility import little_endian_to_int
 from shared.Utility import read_varint
 from shared.TxIn import TxIn
+from shared.TxOut import TxOut
 
 class Tx:
     def __init__(self, version, tx_ins, tx_outs, locktime, testnet=False):
@@ -30,7 +31,8 @@ class Tx:
         return self.hash().hex()
 
     def hash(self):
-        return hash256(self.serialize())[::-1]
+        return hash256(b'temp')
+        #return hash256(self.serialize())[::-1]
 
     @classmethod
     def parse(self, stream, testnet=False):
@@ -43,8 +45,8 @@ class Tx:
         num_outputs = read_varint(stream)
         for ouptut in range(num_outputs):
             outputs.append(TxOut.parse(stream))
-
-        return self(version, inputs, outputs, None, testnet=testnet)
+        locktime = little_endian_to_int(stream.read(4))
+        return self(version, inputs, outputs, locktime, testnet=testnet)
 
 
     
