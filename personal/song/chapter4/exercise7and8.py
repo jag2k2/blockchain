@@ -1,6 +1,5 @@
 from Utility import little_endian_to_int, int_to_little_endian
 
-
 if __name__ == '__main__':
 
         h1 = bytes.fromhex('99c3980000000000')
