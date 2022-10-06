@@ -1,6 +1,6 @@
-from shared.Utility import hash256
+from shared.Utility import hash256, int_to_little_endian
 from shared.Utility import little_endian_to_int
-from shared.Utility import read_varint
+from shared.Utility import read_varint, encode_varint
 from shared.TxIn import TxIn
 from shared.TxOut import TxOut
 
@@ -33,6 +33,18 @@ class Tx:
     def hash(self):
         return hash256(b'temp')
         #return hash256(self.serialize())[::-1]
+
+    def serialize(self):
+        result = int_to_little_endian(self.version, 4)
+        result += encode_varint(len(self.tx_ins))
+        for tx_in in self.tx_ins:
+            result += tx_in.serialize()
+        result += encode_varint(len(self.tx_outs))
+        for tx_out in self.tx_outs:
+            result += tx_out.serialize()
+        result += int_to_little_endian(self.locktime, 4)
+        return result
+        
 
     @classmethod
     def parse(self, stream, testnet=False):

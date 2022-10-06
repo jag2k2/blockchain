@@ -1,4 +1,4 @@
-from shared.Utility import little_endian_to_int, read_varint
+from shared.Utility import int_to_little_endian, little_endian_to_int, read_varint
 from shared.Script import Script
 
 class TxOut:
@@ -8,6 +8,11 @@ class TxOut:
 
     def __repr__(self):
         return '{}:{}'.format(self.amount, self.script_pubkey)
+
+    def serialize(self):
+        result = int_to_little_endian(self.amount, 8)
+        result += self.script_pubkey.serialize()
+        return result
 
     @classmethod
     def parse(self, stream):

@@ -1,4 +1,4 @@
-from shared.Utility import little_endian_to_int, read_varint
+from shared.Utility import little_endian_to_int, int_to_little_endian
 from shared.Script import Script
 
 class TxIn:
@@ -13,6 +13,13 @@ class TxIn:
 
     def __repr__(self):
         return '{}:{}'.format(self.prev_tx.hex(), self.prev_index)
+
+    def serialize(self):
+        result = self.prev_tx[::-1]
+        result += int_to_little_endian(self.prev_index, 4)
+        result += self.script_sig.serialize()
+        result += int_to_little_endian(self.sequence, 4)
+        return result
 
     @classmethod
     def parse(self, stream):
