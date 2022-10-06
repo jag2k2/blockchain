@@ -15,7 +15,7 @@ class TxOut:
         return result
 
     @classmethod
-    def parse(self, stream):
+    def parse(cls, stream):
         amount = little_endian_to_int(stream.read(8))
         script_pubkey = Script.parse(stream)
-        return self(amount, script_pubkey)
+        return cls(amount, script_pubkey)

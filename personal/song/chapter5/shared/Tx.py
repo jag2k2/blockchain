@@ -45,9 +45,17 @@ class Tx:
         result += int_to_little_endian(self.locktime, 4)
         return result
         
+    def fee(self):
+        value_of_inputs = 0
+        for tx_in in self.tx_ins:
+            value_of_inputs += tx_in.value()
+        value_of_outputs = 0
+        for tx_out in self.tx_outs:
+            value_of_outputs += tx_out.amount
+        return value_of_inputs - value_of_outputs
 
     @classmethod
-    def parse(self, stream, testnet=False):
+    def parse(cls, stream, testnet=False):
         version = little_endian_to_int(stream.read(4))
         num_inputs = read_varint(stream)
         inputs = []
@@ -58,7 +66,7 @@ class Tx:
         for ouptut in range(num_outputs):
             outputs.append(TxOut.parse(stream))
         locktime = little_endian_to_int(stream.read(4))
-        return self(version, inputs, outputs, locktime, testnet=testnet)
+        return cls(version, inputs, outputs, locktime, testnet=testnet)
 
 
     
