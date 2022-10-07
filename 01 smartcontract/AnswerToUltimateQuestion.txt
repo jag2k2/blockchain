@@ -2,7 +2,6 @@ I wanted to play around with mathematical operations and the hash256 function.  
 3x^2 + 2x - 14.  Any result that matches the hash of the number "42" unlocks that output.  
 
 Script Sig:
-<0xff122c0ea37f12c5c0f330b2616791df8cb8cc8f1114304afbf0cff5d79cec54>
 <4>
 
 ScriptPubKey:
@@ -18,4 +17,5 @@ OP_ADD
 OP_14
 OP_SUB
 OP_HASH256
+<0xff122c0ea37f12c5c0f330b2616791df8cb8cc8f1114304afbf0cff5d79cec54>
 OP_EQUAL
