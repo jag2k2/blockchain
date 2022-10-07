@@ -30,6 +30,7 @@ class Tx:
         return self.hash().hex()
 
     def hash(self):
+        #return hash256(b'sup')
         return hash256(self.serialize())[::-1]
 
     def serialize(self):

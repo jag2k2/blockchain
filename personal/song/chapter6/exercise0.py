@@ -28,3 +28,7 @@ df2b3eda8db57397088ac46430600'
     print(tx_obj.tx_ins[1].script_sig)
     print(tx_obj.tx_outs[0].script_pubkey)
     print(tx_obj.tx_outs[1].amount)
+
+    print(tx_obj)
+    #print(tx_obj.fee())
+    
