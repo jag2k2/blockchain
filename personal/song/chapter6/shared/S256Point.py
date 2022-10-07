@@ -39,7 +39,7 @@ class S256Point(Point):
         return b'\x04' + x_payload + self.y.num.to_bytes(32, 'big')
 
     @classmethod
-    def parse(self, sec_bin):
+    def parse(cls, sec_bin):
         if sec_bin[0] == 4:
             x = int.from_bytes(sec_bin[1:33], 'big')
             y = int.from_bytes(sec_bin[33:65], 'big')
