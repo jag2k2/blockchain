@@ -132,15 +132,15 @@ class TxFetcher:
     @classmethod
     def get_url(cls, testnet=False):
         if testnet:
-            return 'http://testnet.programmingbitcoin.net'
+            return 'https://blockstream.info/testnet/api'
         else:
-            return 'http://mainnet.programmingbitcoin.net'
+            return 'https://blockstream.info/api'
     
     @classmethod
     def fetch(cls, tx_id, testnet=False, fresh=False):
         # get raw transaction by id, parse it then verify the hash matches the original id you fetched
         if fresh or (tx_id not in cls.cache):
-            url = '{}/tx/{}.hex'.format(cls.get_url(testnet), tx_id)
+            url = '{}/tx/{}/hex'.format(cls.get_url(testnet), tx_id)
             response = requests.get(url)
             try:
                 raw = bytes.fromhex(response.text.strip())

@@ -1,5 +1,6 @@
 from logging import Logger
 from shared.Utility import encode_varint, int_to_little_endian, little_endian_to_int, read_varint
+from shared.Op import OP_CODE_FUNCTIONS, OP_CODE_NAMES
 
 class Script:
     
@@ -8,6 +9,19 @@ class Script:
             self.cmds = []
         else:
             self.cmds = cmds
+
+    def __repr__(self):
+        result = []
+        for cmd in self.cmds:
+            if type(cmd) == int:
+                if OP_CODE_NAMES.get(cmd):
+                    name = OP_CODE_NAMES.get(cmd)
+                else:
+                    name = 'OP_[{}]'.format(cmd)
+                result.append(name)
+            else:
+                result.append(cmd.hex())
+        return ' '.join(result)
 
     def __add__(self, other):
         return Script(self.cmds + other.cmds)
@@ -37,6 +51,38 @@ class Script:
         total = len(result)
         return encode_varint(total) + result
                 
+    def evaluate(self, z):
+        cmds = self.cmds[:]     # copy commands list
+        stack = []
+        altstack = []
+        while len(cmds) > 0:
+            cmd = cmds.pop(0)
+            if type(cmd) == int:
+                operation = OP_CODE_FUNCTIONS[cmd]
+                if cmd in (99, 100):                # 99 and 100 are OP_IF and OP_NOTIF
+                    if not operation(stack, cmds):
+                        Logger.info('bad op: {}'.format(OP_CODE_NAMES[cmd]))
+                        return False
+                elif cmd in (107, 108):            # OP_TOALTSTACK and OP_FROMALTSTACK
+                    if not operation(stack, altstack):
+                        Logger.info('bad op: {}'.format(OP_CODE_NAMES[cmd]))
+                        return False
+                elif cmd in (172, 173, 174, 175):  #OP_CHECKSIG, OP_CHECKSIGVERIFY, OP_CHECKMULTISIG, OP_CHECKMULTISIGVERIFY
+                    if not operation(stack,z):
+                        Logger.info('bad op: {}'.format(OP_CODE_NAMES[cmd]))
+                        return False
+                else:
+                    if not operation(stack):
+                        Logger.info('bad op: {}'.format(OP_CODE_NAMES[cmd]))
+                        return False
+            else:
+                stack.append(cmd)
+        if len(stack) == 0:
+            return False
+        if stack.pop() == b'':
+            return False
+        return True
+
     @classmethod
     def parse(cls, stream):
         script_length = read_varint(stream)

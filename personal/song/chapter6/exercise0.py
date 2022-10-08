@@ -30,5 +30,5 @@ df2b3eda8db57397088ac46430600'
     print(tx_obj.tx_outs[1].amount)
 
     print(tx_obj)
-    #print(tx_obj.fee())
+    print(tx_obj.fee())
     

@@ -43,7 +43,10 @@ class Tx:
             result += tx_out.serialize()
         result += int_to_little_endian(self.locktime, 4)
         return result
-        
+    
+    def sig_hash(self):
+        x = 1
+
     def fee(self, testnet=False):
         value_of_inputs = 0
         for tx_in in self.tx_ins:
