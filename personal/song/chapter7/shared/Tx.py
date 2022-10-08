@@ -76,7 +76,7 @@ class Tx:
     def verify_input(self, input_index):
         z = self.sig_hash(input_index)
         tx_in = self.tx_ins[input_index]
-        prev_tx_pubkey = tx_in.script_pubkey(self.testnet)
+        prev_tx_pubkey = tx_in.script_pubkey(self.testnet)      # fetch for the pubkey of the prev transaction
         combined_script = tx_in.script_sig + prev_tx_pubkey
         return combined_script.evaluate(z)
 
@@ -88,6 +88,14 @@ class Tx:
                 return False
         return True
 
+    def sign_input(self, input_index, private_key):
+        z = self.sig_hash(input_index)
+        der = private_key.sign(z).der()                     # create the signature
+        sig = der + SIGHASH_ALL.to_bytes(1, 'big')
+        sec = private_key.public_key.sec()
+        script_sig = Script([sig, sec])                     # create the signature script
+        self.tx_ins[input_index].script_sig = script_sig    # sign the transaction's input
+        return self.verify_input(input_index)
 
     @classmethod
     def parse(cls, stream, testnet=False):
@@ -115,7 +123,7 @@ class TxIn:
         self.sequence = sequence
 
     def __repr__(self):
-        return '{}:{}'.format(self.prev_tx.hex(), self.prev_index)
+        return '{}:{}:{}'.format(self.prev_tx.hex(), self.prev_index, self.script_sig)
 
     def serialize(self):
         result = self.prev_tx[::-1]

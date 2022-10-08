@@ -17,6 +17,17 @@ def encode_base58(s):
         result = BASE58_ALPHABET[mod] + result
     return prefix + result
 
+def decode_base58(s):
+    num = 0
+    for c in s:         # get the number encoded in Base58 address
+        num *= 58
+        num += BASE58_ALPHABET.index(c)
+    combined = num.to_bytes(25, byteorder='big')   # convert the number to big-endian bytes
+    checksum = combined[-4:]
+    if hash256(combined[:-4])[:4] != checksum:
+        raise ValueError('bad address: {} {}'.format(checksum, hash256(combined[:-4])[:4]))
+    return combined[1:-4]  #  first byte is the network prefix.  The last 4 are the checksum.  We care about the 20 in the middle.
+
 def hash160(s):
     '''sha256 followed by ripemd160'''
     return hashlib.new('ripemd160', hashlib.sha256(s).digest()).digest()

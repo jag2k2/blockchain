@@ -9,13 +9,13 @@ import hmac
 class PrivateKey:
     def __init__(self, secret):
         self.secret = secret
-        self.public = secret * G
+        self.public_key = secret * G
 
     def hex(self):
         return '{:x}'.format(self.secret).zfill(64)
 
     def sign(self, msg_hash):
-        k = self.deterministic_k(z)
+        k = self.deterministic_k(msg_hash)
         k_inv = pow(k, N-2, N)
         r =(k*G).x.num
         s = (msg_hash + r*self.secret) * k_inv % N

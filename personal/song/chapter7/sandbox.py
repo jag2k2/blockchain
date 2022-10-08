@@ -1,6 +1,6 @@
+from shared.Utility import decode_base58
 from shared.Tx import Tx
 from io import BytesIO
-
 
 if __name__ == '__main__':
     raw_tx = ('0100000001813f79011acb80925dfe69b3def355fe914bd1d96a3f5f71bf830\
@@ -17,3 +17,5 @@ c99c39800000000001976a9141c4bc762dd5423e332166702cb75f40df79fea1288ac19430600')
 
     print(transaction.verify_input(0))
     print(transaction.verify())
+
+    print(decode_base58('mzx5YhAH9kNHtcN481u6WkjeHjYtVeKVh2').hex())
