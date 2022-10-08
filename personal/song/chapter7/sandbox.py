@@ -11,4 +11,9 @@ afeffffff02a135ef01000000001976a914bc3b654dca7e56b04dca18f2566cdaf02e8d9ada88a\
 c99c39800000000001976a9141c4bc762dd5423e332166702cb75f40df79fea1288ac19430600')
     stream = BytesIO(bytes.fromhex(raw_tx))
     transaction = Tx.parse(stream)
+    print(transaction.id())
     print(transaction.fee())
+    print(transaction.sig_hash(0))
+
+    print(transaction.verify_input(0))
+    print(transaction.verify())
