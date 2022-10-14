@@ -1,11 +1,12 @@
+from io import BytesIO
 import json, requests, uuid
 
 from .hash   import hash160
 from .helper import decode_address
 from lib.encoder import encode_tx
 
-from shared.Tx import TxIn, TxOut
-from shared.Utility import decode_base58
+from shared.Tx import Tx, TxIn, TxOut
+from shared.Utility import decode_base58, int_to_little_endian
 from shared.Script import Script
 
 class RpcSocket:
@@ -107,7 +108,18 @@ class RpcSocket:
         for utxo in unspent_json:
             prev_tx = bytes.fromhex(utxo['txid'])
             vout = int(utxo['vout'])
-            all_utxos.append(TxIn(prev_tx, vout))
+            encoded_key = self.call('dumpprivkey', utxo['address'])
+            private_key = decode_address(encoded_key)
+
+            raw_tx_hex = self.call('getrawtransaction', utxo['txid'])
+            raw_tx_bytes = bytes.fromhex(raw_tx_hex)
+            tx = Tx.parse(BytesIO(raw_tx_bytes))
+            pubkey = tx.tx_outs[vout].script_pubkey
+
+            tx_in = TxIn(prev_tx, vout)
+            tx_in.setPrevTxInfo(private_key, pubkey, utxo['amount'])
+            all_utxos.append(tx_in)
+
         return all_utxos
 
     def get_total_unspent_sats(self):
@@ -123,31 +135,6 @@ class RpcSocket:
         target_h160 = decode_base58(address)
         target_script = Script.p2pkh_script(target_h160)
         return TxOut(amount, target_script)
-
-    def get_private_key(self, tx_id, tx_index):
-        transaction = self.call('gettransaction', tx_id)
-        details = transaction['details']
-        for detail in details:
-            if int(detail['vout']) == tx_index: 
-                encoded_key = self.call('dumpprivkey', detail['address'])
-        return decode_address(encoded_key)
-
-    # def get_recv(self, address=None, fmt='bech32'):
-    #     if address is None:
-    #         if fmt == 'base58':
-    #             address = self.call('getnewaddress', ['-format', 'legacy'])
-    #         else:
-    #             address = self.call('getnewaddress')
-    #     encoded_key = self.call('dumpprivkey', address)
-    #     public_key  = self.call('getaddressinfo', address)['pubkey']
-    #     pubkey_hash = hash160(public_key).hex()
-    #     return {
-    #         'address': address,
-    #         'priv_key': decode_address(encoded_key),
-    #         'pub_key': public_key,
-    #         'pubkey_hash': pubkey_hash,
-    #         'redeem_script': f'1976a914{pubkey_hash}88ac',
-    #     }
 
     def send_transaction(self, transaction):
         raw_tx = transaction.serialize().hex()

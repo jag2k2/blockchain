@@ -1,5 +1,3 @@
-from io import BytesIO
-import requests
 from shared.PrivateKey import PrivateKey
 from shared.Utility import hash256, int_to_little_endian, little_endian_to_int, read_varint, encode_varint
 from shared.Script import Script
@@ -49,19 +47,19 @@ class Tx:
     def fee(self, testnet=False):
         value_of_inputs = 0
         for tx_in in self.tx_ins:
-            value_of_inputs += tx_in.value(testnet=False)
+            value_of_inputs += tx_in.value
         value_of_outputs = 0
         for tx_out in self.tx_outs:
             value_of_outputs += tx_out.amount
         return value_of_inputs - value_of_outputs
 
-    def sig_hash(self, input_index, rpc):
+    def sig_hash(self, input_index):
         modified_tx = int_to_little_endian(self.version, 4)
         modified_tx += encode_varint(len(self.tx_ins))
         # empty ScriptSig from all inputs.  Replace ScriptSig with ScriptPubKey for just input being signed
         for i, tx_in in enumerate(self.tx_ins): 
             if i == input_index:
-                modified_tx += TxIn(tx_in.prev_tx, tx_in.prev_index, tx_in.script_pubkey(rpc, self.testnet), tx_in.sequence).serialize()
+                modified_tx += TxIn(tx_in.prev_tx, tx_in.prev_index, tx_in.script_pubkey, tx_in.sequence).serialize()
             else:
                 modified_tx += TxIn(tx_in.prev_tx, tx_in.prev_index, None, tx_in.sequence).serialize()
         modified_tx += encode_varint(len(self.tx_outs))
@@ -73,40 +71,40 @@ class Tx:
         h256 = hash256(modified_tx)
         return int.from_bytes(h256, 'big')
 
-    def verify_input(self, input_index, rpc):
-        z = self.sig_hash(input_index, rpc)
+    def verify_input(self, input_index):
+        z = self.sig_hash(input_index)
         tx_in = self.tx_ins[input_index]
-        prev_tx_pubkey = tx_in.script_pubkey(rpc, self.testnet)      # fetch for the pubkey of the prev transaction
+        prev_tx_pubkey = tx_in.script_pubkey
         combined_script = tx_in.script_sig + prev_tx_pubkey
         return combined_script.evaluate(z)
 
-    def verify(self, rpc):
+    def verify(self):
         if self.fee() < 0:
             return False
         for i in range(len(self.tx_ins)):
-            if not self.verify_input(i, rpc):
+            if not self.verify_input(i):
                 return False
         return True
 
-    def sign(self, rpc):
+    def sign(self):
         for i in range(len(self.tx_ins)):
             print(str(self.tx_ins[i].prev_tx.hex()))
             print(self.tx_ins[i].prev_index)
-            secret = rpc.get_private_key(str(self.tx_ins[i].prev_tx.hex()), self.tx_ins[i].prev_index)
+            secret = str(self.tx_ins[i].private_key)
             secret_int = int(secret,16)
             private_key = PrivateKey(secret_int)
-            self.sign_input(i, rpc, private_key)
+            self.sign_input(i, private_key)
         return True
 
 
-    def sign_input(self, input_index, rpc, private_key):
-        z = self.sig_hash(input_index, rpc)
+    def sign_input(self, input_index, private_key):
+        z = self.sig_hash(input_index)
         der = private_key.sign(z).der()                     # create the signature
         sig = der + SIGHASH_ALL.to_bytes(1, 'big')
         sec = private_key.public_key.sec()
         script_sig = Script([sig, sec])                     # create the signature script
         self.tx_ins[input_index].script_sig = script_sig    # sign the transaction's input
-        return self.verify_input(input_index, rpc)
+        return self.verify_input(input_index)
 
     @classmethod
     def parse(cls, stream, testnet=False):
@@ -136,23 +134,17 @@ class TxIn:
     def __repr__(self):
         return '{}:{}:{}'.format(self.prev_tx.hex(), self.prev_index, self.script_sig)
 
+    def setPrevTxInfo(self, private_key, script_pubKey, amount):
+        self.private_key = private_key
+        self.script_pubkey = script_pubKey
+        self.amount = amount
+
     def serialize(self):
         result = self.prev_tx[::-1]
         result += int_to_little_endian(self.prev_index, 4)
         result += self.script_sig.serialize()
         result += int_to_little_endian(self.sequence, 4)
         return result
-
-    def fetch_tx(self, rpc, testnet=False):
-        return TxFetcher.fetch(self.prev_tx.hex(), rpc, testnet=testnet)
-
-    def value(self, rpc, testnet=False):
-        tx =  self.fetch_tx(rpc, testnet=testnet)
-        return tx.tx_outs[self.prev_index].amount
-
-    def script_pubkey(self, rpc, testnet=False):
-        tx = self.fetch_tx(rpc, testnet=testnet)
-        return tx.tx_outs[self.prev_index].script_pubkey
 
     @classmethod
     def parse(cls, stream):
@@ -182,18 +174,3 @@ class TxOut:
         script_pubkey = Script.parse(stream)
         return cls(amount, script_pubkey)
     
-class TxFetcher:   
-    @classmethod
-    def fetch(cls, tx_id, rpc, testnet=False):
-        # get raw transaction by id, parse it then verify the hash matches the original id you fetched
-        raw_string = rpc.call('getrawtransaction', tx_id)
-        raw = bytes.fromhex(raw_string)
-        if raw[4] == 0:
-            raw = raw[:4] + raw[6:]
-            tx = Tx.parse(BytesIO(raw), testnet=testnet)
-            tx.locktime = little_endian_to_int(raw[-4:])
-        else:
-            tx = Tx.parse(BytesIO(raw), testnet=testnet)
-        if tx.id() != tx_id:
-            raise ValueError('not the same id: {} vs {}'.format(tx.id(), tx_id))
-        return tx
