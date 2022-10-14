@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     ## Setup our RPC socket.
     rpc = RpcSocket({ 'wallet': 'sc_wallet' })
-    assert rpc.check()
+    assert(rpc.check())
 
     ## Get a utxo for Alice.
     alice_utxo = rpc.get_utxo(0)

@@ -1,4 +1,4 @@
-from shared.Tx import SIGHASH_ALL, Tx, TxIn, TxOut
+from shared.Tx import Tx, TxIn, TxOut
 from shared.Utility import decode_base58, little_endian_to_int, hash256
 from shared.Script import Script
 from shared.PrivateKey import PrivateKey
@@ -19,6 +19,7 @@ if __name__ == '__main__':
     passphrase4 = b'jeff.tipps@utexas.edu final address'
     secret4 = little_endian_to_int(hash256(passphrase4))
     private_key4 = PrivateKey(secret4)
+    print(private_key4.wif(True, True))
     final_address = private_key4.public_key.address(testnet=True)
     print(final_address + ": " + decode_base58(final_address).hex()) # msKh9SnDd4UQVBajk55FdPWqunounRy5E8
 
@@ -52,3 +53,4 @@ if __name__ == '__main__':
     print(tx_obj.serialize().hex())
 
     # tx_id: 68ac91b864a2e833e8acb272db0be68e5bde52d346366a94762eb38350a83eba
+    
