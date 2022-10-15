@@ -2,14 +2,15 @@ from lib.rpc import RpcSocket
 from shared.Tx import Tx
 
 if __name__ == '__main__':
-    from_rpc = RpcSocket({'wallet':'tn_wallet'})
-    to_rpc = RpcSocket({'wallet':'bob_wallet'})
+    from_rpc = RpcSocket({'wallet':'bob_wallet'})
+    to_rpc = RpcSocket({'wallet':'alice_wallet'})
 
     all_txins = from_rpc.get_all_utxos()
     all_amount = from_rpc.get_total_unspent_sats()
     fee = 500
     send_amount = int(all_amount * 0.8)
     change_amount = all_amount - send_amount - fee
+    #address = 'mquczSS7Dz82TeG4Z1sDp23TEi4jR6ApTg'
     tx_out = to_rpc.get_txout(send_amount)
     tx_out_change = from_rpc.get_txout(change_amount)
 

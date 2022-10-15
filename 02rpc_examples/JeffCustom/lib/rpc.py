@@ -1,12 +1,10 @@
 from io import BytesIO
 import json, requests, uuid
 
-from .hash   import hash160
 from .helper import decode_address
-from lib.encoder import encode_tx
 
 from shared.Tx import Tx, TxIn, TxOut
-from shared.Utility import decode_base58, int_to_little_endian
+from shared.Utility import decode_base58
 from shared.Script import Script
 
 class RpcSocket:
@@ -129,9 +127,9 @@ class RpcSocket:
             amount += float(utxo['amount'])
         return int(amount * 100000000)
 
-    def get_txout(self, amount):
-        address = self.call('getnewaddress', ['', 'legacy'])
-        #address = 'mnRsJs2nBBqMwb9jjUjxyht2meynnuLsF4'
+    def get_txout(self, amount, address=None):
+        if address == None:
+            address = self.call('getnewaddress', ['', 'legacy'])
         target_h160 = decode_base58(address)
         target_script = Script.p2pkh_script(target_h160)
         return TxOut(amount, target_script)
