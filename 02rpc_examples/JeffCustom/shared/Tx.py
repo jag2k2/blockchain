@@ -88,8 +88,8 @@ class Tx:
 
     def sign(self):
         for i in range(len(self.tx_ins)):
-            print(str(self.tx_ins[i].prev_tx.hex()))
-            print(self.tx_ins[i].prev_index)
+            # print(str(self.tx_ins[i].prev_tx.hex()))
+            # print(self.tx_ins[i].prev_index)
             secret = str(self.tx_ins[i].private_key)
             secret_int = int(secret,16)
             private_key = PrivateKey(secret_int)
