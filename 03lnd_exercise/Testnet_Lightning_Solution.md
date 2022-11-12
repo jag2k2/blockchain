@@ -180,5 +180,40 @@ jtipps@DESKTOP-J69RTBS:~/GitRepos/ut-blockchain/03lnd_exercise/lnd-demo/alice$ .
 https://blockstream.info/testnet/tx/b0f3a506af2a12298071b237a2578de34cbe0c4816b54eca6a6f97aa5345a760
 
 ## Alice wallet balance
-
+```
+jtipps@DESKTOP-J69RTBS:~/GitRepos/ut-blockchain/03lnd_exercise/lnd-demo/alice$ ./lcli walletbalance
+{
+    "total_balance": "10000",
+    "confirmed_balance": "10000",
+    "unconfirmed_balance": "0",
+    "locked_balance": "0",
+    "reserved_balance_anchor_chan": "0",
+    "account_balance": {
+        "default": {
+            "confirmed_balance": "10000",
+            "unconfirmed_balance": "0"
+        }
+    }
+}
+```
 ## Jeff wallet balance
+```
+jtipps@DESKTOP-J69RTBS:~/GitRepos/ut-blockchain/03lnd_exercise/lnd-demo/jeff$ ./lcli walletbalance
+{
+    "total_balance": "189639",
+    "confirmed_balance": "189639",
+    "unconfirmed_balance": "0",
+    "locked_balance": "0",
+    "reserved_balance_anchor_chan": "0",
+    "account_balance": {
+        "default": {
+            "confirmed_balance": "189639",
+            "unconfirmed_balance": "0"
+        }
+    }
+}
+```
+
+## Defund Lightning Nodes
+https://blockstream.info/testnet/tx/3fe906ded977225b87deaaca031a122c9ed814450e9d947135be828f9f3e61f9
+https://blockstream.info/testnet/tx/0e7973f286f1a0e1b6ea7078e0640e7c801bc02ff8e85190effa596fdea9758f
