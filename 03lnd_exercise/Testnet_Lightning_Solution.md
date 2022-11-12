@@ -17,6 +17,7 @@ In this assignment I copied the class [lndemo](https://github.com/cmdruid/bitcoi
 13. [Alice Closes Channel](#alice-closes-channel)
 14. [Alice Wallet Balance](#alice-wallet-balance)
 15. [Jeff Wallet Balance](#jeff-wallet-balance)
+16. [Summary of Transactions](#summary-of-transactions)
 
 
 ## Create New Address in Jeffs Node
@@ -90,7 +91,6 @@ jtipps@DESKTOP-J69RTBS:~/GitRepos/ut-blockchain/03lnd_exercise/lnd-demo/jeff$ ./
         "funding_txid": "c8e3cb56760f9525264999e9d6f626010331e8df5a9d0708476425c863939c8d"
 }
 ```
-
 https://blockstream.info/testnet/tx/c8e3cb56760f9525264999e9d6f626010331e8df5a9d0708476425c863939c8d
 
 ## Alice Creates Invoice
@@ -228,3 +228,7 @@ jtipps@DESKTOP-J69RTBS:~/GitRepos/ut-blockchain/03lnd_exercise/lnd-demo/jeff$ ./
     }
 }
 ```
+## Summary of Transactions
+- [Testnet transaction to fund jeff lightning node](https://blockstream.info/testnet/tx/df40d76fc6df7cb2c2ad94635dbd508cc9846d0d75c0da6c3004b602c26b5e5c)
+- [Open channel testnet transaction](https://blockstream.info/testnet/tx/c8e3cb56760f9525264999e9d6f626010331e8df5a9d0708476425c863939c8d)
+- [Close channel testnet transaction](https://blockstream.info/testnet/tx/b0f3a506af2a12298071b237a2578de34cbe0c4816b54eca6a6f97aa5345a760)
