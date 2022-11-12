@@ -3,7 +3,7 @@ from shared.Tx import Tx
 
 if __name__ == '__main__':
     from_rpc = RpcSocket({'wallet': 'bob_wallet'})
-    to_rpc = RpcSocket({'wallet':'alice_wallet'})
+    to_rpc = RpcSocket({'wallet':'tn_wallet'})
 
     all_txins = from_rpc.get_all_utxos()
     all_amount = from_rpc.get_total_unspent_sats()
