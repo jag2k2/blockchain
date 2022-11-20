@@ -55,15 +55,19 @@ class Tx:
             value_of_outputs += tx_out.amount
         return value_of_inputs - value_of_outputs
 
-    def sig_hash(self, input_index):
+    def sig_hash(self, input_index, redeem_script=None):
         modified_tx = int_to_little_endian(self.version, 4)
         modified_tx += encode_varint(len(self.tx_ins))
         # empty ScriptSig from all inputs.  Replace ScriptSig with ScriptPubKey for just input being signed
         for i, tx_in in enumerate(self.tx_ins): 
             if i == input_index:
-                modified_tx += TxIn(tx_in.prev_tx, tx_in.prev_index, tx_in.script_pubkey(self.testnet), tx_in.sequence).serialize()
+                if redeem_script:
+                    script_sig = redeem_script
+                else:
+                    script_sig = tx_in.script_pubkey(self.testnet)
             else:
-                modified_tx += TxIn(tx_in.prev_tx, tx_in.prev_index, None, tx_in.sequence).serialize()
+                script_sig = None
+            modified_tx += TxIn(tx_in.prev_tx, tx_in.prev_index, script_sig, tx_in.sequence).serialize()
         modified_tx += encode_varint(len(self.tx_outs))
         for tx_out in self.tx_outs:
             modified_tx += tx_out.serialize()
@@ -74,10 +78,17 @@ class Tx:
         return int.from_bytes(h256, 'big')
 
     def verify_input(self, input_index):
-        z = self.sig_hash(input_index)
         tx_in = self.tx_ins[input_index]
-        prev_tx_pubkey = tx_in.script_pubkey(self.testnet)      # fetch for the pubkey of the prev transaction
-        combined_script = tx_in.script_sig + prev_tx_pubkey
+        script_pubkey = tx_in.script_pubkey(self.testnet)   # fetch for the pubkey of the prev transaction
+        if script_pubkey.is_p2sh():
+            cmd = tx_in.script_sig.cmds[-1]
+            raw_redeem = encode_varint(len(cmd)) + cmd;
+            redeem_script = Script.parse(BytesIO(raw_redeem))
+            print(redeem_script)
+        else:
+            redeem_script = None
+        z = self.sig_hash(input_index, redeem_script)    
+        combined_script = tx_in.script_sig + script_pubkey
         return combined_script.evaluate(z)
 
     def verify(self):

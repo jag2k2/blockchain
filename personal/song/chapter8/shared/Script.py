@@ -93,10 +93,10 @@ class Script:
                     cmds.pop()  # OP_HASH160
                     h160 = cmds.pop() # hash of redeem script
                     cmds.pop() #  OP_EQUALS
-                    if not op_hash160(stack):
+                    if not op_hash160(stack):  #pop top element (redeem script) hash it and push back onto the stack
                         return False
-                    stack.append(h160)
-                    if not op_equal(stack):
+                    stack.append(h160) # push the hash of the redeem script back onto the stack
+                    if not op_equal(stack): # make sure the top two elements are equal
                         return False
                     if not op_verify(stack): # op_verify consumes one element and verifies that it is TRUE
                         LOGGER.info('bad p2sh h160')
@@ -142,3 +142,24 @@ class Script:
     def p2pkh_script(cls, h160):
         # OP_DUP, OP_HASH160, h160, OP_EQUALVERIFY, OP_CHECKSIG
         return cls([0x76, 0xa9, h160, 0x88, 0xac])
+
+    @classmethod
+    def p2sh_script(h160):
+        # OP_HASH160, h160, OP_EQUAL
+        return Script([0xa9, h160, 0x87])
+    
+    
+    def is_p2pkh(self):
+        '''Returns whether this follows the
+        OP_DUP OP_HASH160 <20 byte hash> OP_EQUALVERIFY OP_CHECKSIG pattern.'''
+        return len(self.cmds) == 5 and self.cmds[0] == 0x76 \
+            and self.cmds[1] == 0xa9 \
+            and type(self.cmds[2]) == bytes and len(self.cmds[2]) == 20 \
+            and self.cmds[3] == 0x88 and self.cmds[4] == 0xac
+
+    def is_p2sh(self):
+        '''Returns whether this follows the
+        OP_HASH160 <20 byte hash> OP_EQUAL pattern.'''
+        return len(self.cmds) == 3 and self.cmds[0] == 0xa9 \
+            and type(self.cmds[1]) == bytes and len(self.cmds[1]) == 20 \
+            and self.cmds[2] == 0x87
