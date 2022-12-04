@@ -1,5 +1,5 @@
 # UT Blockchain Class 
-This repo includes a mixture of in-class assignments and exercises from Jimmy Song's book "Programming Bitcoin".  All the code under "personal" represents my solutions to the exercises in Jimmy Song's book but I used the secp256k1 and digital signature libraries from those exercises in some of the in-class assignments.  The in-class assignments are organized into the three directories:
+This repo includes a mixture of in-class assignments and exercises from Jimmy Song's book "Programming Bitcoin".  All the code under "personal" represents my solutions to the exercises in Jimmy Song's book but I used the secp256k1 and digital signature libraries from those exercises in some of the in-class assignments.  The in-class assignments are organized into the following three directories:
 
 ## Table of Contents:
 1. [Assignment 1](#assignment-1)
